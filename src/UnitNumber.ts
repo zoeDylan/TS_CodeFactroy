@@ -33,7 +33,7 @@ export class UnitNumber {
     private static readonly defaultNumber = 0;
 
     /** 单位数字字符串正则 */
-    private static unitNumberStrRegExp = new RegExp(`^([\\+\\-]?\\d+(\\.\\d+)?(e[\\+\\-]?\\d+)?)(${UnitNumber.unitStrList.join("|").replace(" ", "")})?$`, "i");
+    public static unitNumberStrRegExp = new RegExp(`^([\\+\\-]?\\d+(\\.\\d+)?(e[\\+\\-]?\\d+)?)(${UnitNumber.unitStrList.join("|").replace(" ", "")})?$`, "i");
 
     /** 单位字符串正则 */
     private static unitStrRegExp = new RegExp(`(${UnitNumber.unitStrList.join("|").replace(" ", "")})?$`, "i");
@@ -131,7 +131,7 @@ export class UnitNumber {
      */
     private static cutDecimalsStr(targetVal: UnitNumberInputType, decimalsLen: UnitNumberCutDecimalsLenType = UnitNumber.defaultDecimalsLen): string {
         if (!UnitNumber.checkUnitNumber(targetVal)) {
-            UnitNumber.debugLog("Last Error By UnitNumber.cutDecimalsStr", "异常值，使用默认值", `Val=${targetVal} defaultVal=${UnitNumber.defaultNumber}`);
+            UnitNumber.debugLog("Last Error By UnitNumber.cutDecimalsStr", "异常值，使用默认值", `Val=${typeof targetVal} ${targetVal} defaultVal=${UnitNumber.defaultNumber}`);
             targetVal = UnitNumber.defaultNumber;
 
         }
@@ -210,16 +210,16 @@ export class UnitNumber {
         let val: BigNumber;
 
         if (typeof targetVal == "number") val = new BigNumber(targetVal);
-        else if (targetVal instanceof UnitNumber) val = targetVal.clone();
+        else if (targetVal instanceof UnitNumber) val = new BigNumber(targetVal._number);
         else if (BigNumber.isBigNumber(targetVal)) val = new BigNumber(targetVal.toFixed())
         else if (typeof targetVal == "string") {
             if (!UnitNumber.checkUnitNumber(targetVal)) {
-                UnitNumber.debugLog("Last Error By UnitNumber.converToBigNumber", "无法转换为大数字类型,使用默认值", `Val=${targetVal} defaultVal=${UnitNumber.defaultNumber}`);
+                UnitNumber.debugLog("Last Error By UnitNumber.converToBigNumber", "无法转换为大数字类型,使用默认值", `Val=${typeof targetVal} ${targetVal} defaultVal=${UnitNumber.defaultNumber}`);
                 val = new BigNumber(UnitNumber.defaultNumber);
 
             } else val = new BigNumber(UnitNumber.converToLongStr(targetVal));
         } else {
-            UnitNumber.debugLog("Currect Error By UnitNumber.converToBigNumber", "类型错误,使用默认值.", `Val=${targetVal} defaultVal=${UnitNumber.defaultNumber}`);
+            UnitNumber.debugLog("Currect Error By UnitNumber.converToBigNumber", "类型错误,使用默认值.", `Val=${typeof targetVal} ${targetVal} defaultVal=${UnitNumber.defaultNumber}`);
             val = new BigNumber(UnitNumber.defaultNumber);
 
         }
@@ -238,7 +238,7 @@ export class UnitNumber {
         if (typeof targetVal == "number") val = new BigNumber(targetVal).toFixed();
         else if (typeof targetVal == "string") {
             if (!UnitNumber.checkUnitNumber(targetVal)) {
-                UnitNumber.debugLog("Last Error By UnitNumber.converToLongStr", "无法转换为长字符串格式，使用默认值", `Val=${targetVal} defaultVal=${UnitNumber.defaultNumber}`);
+                UnitNumber.debugLog("Last Error By UnitNumber.converToLongStr", "无法转换为长字符串格式，使用默认值", `Val=${typeof targetVal} ${targetVal} defaultVal=${UnitNumber.defaultNumber}`);
                 val = UnitNumber.defaultNumber.toString();
 
             } else {
@@ -259,7 +259,7 @@ export class UnitNumber {
         } else if (BigNumber.isBigNumber(targetVal)) val = targetVal.toFixed();
         else if (targetVal instanceof UnitNumber) val = targetVal._number.toFixed();
         else {
-            UnitNumber.debugLog("Current Error By UnitNumber.converToLongStr", "值类型错误，使用默认值.", `Val=${targetVal} defaultVal=${UnitNumber.defaultNumber}`);
+            UnitNumber.debugLog("Current Error By UnitNumber.converToLongStr", "值类型错误，使用默认值.", `Val=${typeof targetVal} ${targetVal} defaultVal=${UnitNumber.defaultNumber}`);
             val = UnitNumber.defaultNumber.toString();
 
         }
@@ -294,6 +294,8 @@ export class UnitNumber {
             if (targetVal.length == 0) {
                 errMsg = "空字符串";
 
+            } else if (/ /g.test(targetVal)) {
+                errMsg  = "字符串存在空格";
             } else if (!UnitNumber.unitNumberStrRegExp.test(targetVal)) {
                 errMsg = "非正常单位数字格式";
 
@@ -302,7 +304,7 @@ export class UnitNumber {
 
         state = errMsg.length == 0;
 
-        if (errMsg) UnitNumber.debugLog("Current Error By UnitNumber.checkUnitNumber", errMsg, targetVal);
+        if (errMsg) UnitNumber.debugLog("Current Error By UnitNumber.checkUnitNumber", errMsg, typeof targetVal, targetVal);
 
         /// 缓存存储
         // 已达到缓存上限,删除一半数据
@@ -421,6 +423,11 @@ export class UnitNumber {
 
     /** 当前类数值 */
     private _number: BigNumber
+
+    /** 获取数字对象 */
+    public get number() {
+        return this.clone()._number
+    }
 
     /**
      * 获取值
@@ -553,6 +560,6 @@ export class UnitNumber {
 
     /** 克隆 */
     public clone() {
-        return new BigNumber(this._number)
+        return new UnitNumber(this)
     }
 }

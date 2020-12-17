@@ -1,25 +1,27 @@
 {
-    "name": "ts_codefactroy",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "directories": {
-      "test": "test"
-    },
-    "dependencies": {
-      "bignumber.js": "^9.0.1",
-      "commander": "^6.2.0",
-      "install": "^0.13.0",
-      "mockjs": "^1.1.0",
-      "npm": "^6.14.9"
-    },
-    "devDependencies": {
-      "@types/mockjs": "^1.0.3"
-    },
-    "scripts": {
-      "test": "mocha "
-    },
-    "author": "",
-    "license": "ISC"
-  }
-  
+  "name": "ts_codefactroy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "bignumber.js": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/mocha": "^8.2.0",
+    "@types/mockjs": "^1.0.3",
+    "@types/node": "^14.14.14",
+    "mocha": "^8.2.1",
+    "nyc": "^15.1.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
+  },
+  "scripts": {
+    "Random.ts": "mocha --require node_modules/ts-node/register --extensions ts,tsx src test/Random.test.ts",
+    "UnitNumber.ts": "mocha --require node_modules/ts-node/register --extensions ts,tsx src test/UnitNumber.test.ts"
+  },
+  "author": "",
+  "license": "ISC"
+}
