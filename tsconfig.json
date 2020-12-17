@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "module": "commonjs",
+        "lib": [
+            "ESNext",
+            "DOM"
+        ],
+        "target": "ESNEXT",
+        "allowJs": true,
+        "experimentalDecorators": true,
+        "skipLibCheck": true,
+        "inlineSourceMap": true
+    },
+    "exclude": [
+        "node_modules",
+        "test"
+    ]
+}

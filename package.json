@@ -1,0 +1,25 @@
+{
+    "name": "ts_codefactroy",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "directories": {
+      "test": "test"
+    },
+    "dependencies": {
+      "bignumber.js": "^9.0.1",
+      "commander": "^6.2.0",
+      "install": "^0.13.0",
+      "mockjs": "^1.1.0",
+      "npm": "^6.14.9"
+    },
+    "devDependencies": {
+      "@types/mockjs": "^1.0.3"
+    },
+    "scripts": {
+      "test": "mocha "
+    },
+    "author": "",
+    "license": "ISC"
+  }
+  
