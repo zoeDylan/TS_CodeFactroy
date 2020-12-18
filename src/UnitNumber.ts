@@ -295,7 +295,7 @@ export class UnitNumber {
                 errMsg = "空字符串";
 
             } else if (/ /g.test(targetVal)) {
-                errMsg  = "字符串存在空格";
+                errMsg = "字符串存在空格";
             } else if (!UnitNumber.unitNumberStrRegExp.test(targetVal)) {
                 errMsg = "非正常单位数字格式";
 

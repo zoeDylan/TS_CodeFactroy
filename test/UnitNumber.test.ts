@@ -1,37 +1,47 @@
 import { UnitNumber } from "../src/UnitNumber";
 
 describe("#UnitNumber.ts", function () {
-    describe("#new UnitNumber()", () => {
-        const numberArrr = [
-            "1", "-1", "+1",
-            1, -1, +1,
-
-            ".1", "0.1", "+0.1", "-0.1",
-            .1, 0.1, +0.1, -0.1,
-
-            "1e1", "+1e1", "-1e1",
-            1e1, +1e1, -1e1,
-
-            "1e-1", "+1e-1", "-1e-1",
-            1e-1, +1e-1, -1e-1,
-
-            "1e+1", "+1e+1", "-1e+1",
-            1e+1, +1e+1, -1e+1,
-
-            "1K", "-1K", "+1K",
-            1000, -1000, +1000,
-
-            "1.1K", "-1.1K", "+1.1K",
-            1000.1, -1000.1, +1000.1,
-
-            ".1K", "-.1K", "+.1K",
-            "0.1K", "-0.1K", "+0.1K",
-
+    describe("#new UnitNumber", () => {
+        ;[
+            100, "100", "0.1K", "0.0001M", "0.0000001G",
+            -100, "-100", "-0.1K", "-0.0001M", "-0.0000001G",
+            1e2, "1e2",
+            -1e2, "-1e2",
+            1e+2, "1e+2",
+            -1e+2, "-1e+2",
+            10000e-2, "10000e-2",
+            -10000e-2, "-10000e-2",
+            +1e+2, "+1e+2",
+            -1e+2, "-1e+2",
         ].forEach(v => {
-            it(`new UnitNumber( ${typeof v} ${v} )`, deon => {
-                var a = new UnitNumber(v);
-                console.log(`${v} => ${a.number.toFixed()}`);
-                deon();
+            var a = new UnitNumber(v);
+            const target = a.lt(0) ? "-100" : "100";
+            it(`new UnitNumber( ${typeof v} ${v} ) => ${a.number.toFixed()} == ${target}`, done => {
+                if (a.number.toFixed() == target) done();
+                else done(`${typeof v} ${v} 无法转换`);
+            })
+        })
+    });
+    describe("#UnitNumber.checkUnitNumber", () => {
+        ;[
+            100, "100", "0.1K", "0.0001M", "0.0000001G",
+            -100, "-100", "-0.1K", "-0.0001M", "-0.0000001G",
+            1e2, "1e2",
+            -1e2, "-1e2",
+            1e+2, "1e+2",
+            -1e+2, "-1e+2",
+            10000e-2, "10000e-2",
+            -10000e-2, "-10000e-2",
+            +1e+2, "+1e+2",
+            -1e+2, "-1e+2",
+            .1,
+            +.1,
+            -.1
+        ].forEach(v => {
+            var a = UnitNumber.checkUnitNumber(v)
+            it(`UnitNumber.checkUnitNumber( ${typeof v} ${v} ) => ${a}`, done => {
+                if (a) done();
+                else done(` ${typeof v} ${v} 无法验证`);
             })
         })
     });
