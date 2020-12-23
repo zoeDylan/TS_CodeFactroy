@@ -70,7 +70,7 @@ describe("#Random.ts", function () {
 
 
     describe("#randomInt()", function () {
- 
+
         it("#randomInt( max = 100 )", done => {
             const min = 0;
             const max = 100;

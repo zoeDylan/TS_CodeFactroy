@@ -41,6 +41,8 @@ export class UnitNumber {
     /**
      * 获取单位字符倍率
      * @param unitStr 单位字符串
+     * @description 1 到 1k 倍率为: 1000
+     * @description 1 到 1m 倍率为: 1000000
      */
     private static getUnitStrMultiple(unitStr: string): BigNumber {
         let unitIndex = UnitNumber.unitStrList.indexOf(unitStr.toLowerCase());
@@ -61,7 +63,7 @@ export class UnitNumber {
     }
 
     /**
-     * 获取数据单位
+     * 获取单位数字单位
      * @param targetVal 字符串
      */
     private static getUnitStr(targetVal: UnitNumberInputType): string {
@@ -99,7 +101,7 @@ export class UnitNumber {
     }
 
     /** 
-     * 获取单位索引
+     * 获取单位数字的单位索引
      * @param targetVal 目标值
      */
     private static getUnitStrIndex(targetVal: UnitNumberInputType): number {
@@ -114,7 +116,6 @@ export class UnitNumber {
                 // 无法直接获取单位索引，尝试转换为单位进行获取
                 const unitStr = UnitNumber.getUnitStr(targetVal);
                 result = UnitNumber.unitStrList.indexOf(unitStr);
-
             }
         }
 
@@ -122,7 +123,7 @@ export class UnitNumber {
     }
 
     /** 
-     * 截取为指定小数的字符串
+     * 将传入值截取为指定小数的字符串
      * @param targetVal 目标值
      * @param decimalsLen 分数部分长度 默认：UnitNumber.decimalsStrLenLimit
      * @description decimalsLen => UnitNumber.decimalsStrLenLimit 显示配置的小数位数,不足补0
@@ -203,7 +204,7 @@ export class UnitNumber {
 
 
     /**
-     * 转换为大数字类型
+     * 将传入值转换为大数字类型
      * @param targetVal 目标值 
      */
     private static converToBigNumber(targetVal: UnitNumberInputType): BigNumber {
@@ -228,7 +229,7 @@ export class UnitNumber {
     }
 
     /**
-     * 转换到长字符串格式
+     * 将传入值转换到长字符串格式
      * @param targetVal 转换值
      * @description 长字符串无单位
      */
@@ -276,57 +277,64 @@ export class UnitNumber {
      * 检查字符串是否支持单位字符串
      * @param targetVal 目标值
      */
-    public static checkUnitNumber(targetVal: UnitNumberInputType): boolean {
+    public static checkUnitNumber(targetVal: any): boolean {
 
-        if (typeof targetVal != "string") return true;
 
         /** 验证状态 */
         let state = false;
         /** 错误消息 */
         let errMsg = "";
-        if (UnitNumber.checkUnitNumberMap.has(targetVal)) {
-            // 缓存获取
-            const cacheVal = UnitNumber.checkUnitNumberMap.get(targetVal);
-            state = cacheVal[1];
-            errMsg = cacheVal[2];
+
+        if (BigNumber.isBigNumber(targetVal)) state = true;
+        else if (targetVal instanceof UnitNumber) state = true;
+        else if (typeof targetVal !== "string") {
+            errMsg = "传入对象无法转换为单位数字";
         } else {
+            if (UnitNumber.checkUnitNumberMap.has(targetVal)) {
+                // 缓存获取
+                const cacheVal = UnitNumber.checkUnitNumberMap.get(targetVal);
+                state = cacheVal[1];
+                errMsg = cacheVal[2];
+            } else {
 
-            if (targetVal.length == 0) {
-                errMsg = "空字符串";
+                if (targetVal.length == 0) {
+                    errMsg = "空字符串";
 
-            } else if (/ /g.test(targetVal)) {
-                errMsg = "字符串存在空格";
-            } else if (!UnitNumber.unitNumberStrRegExp.test(targetVal)) {
-                errMsg = "非正常单位数字格式";
+                } else if (/ /g.test(targetVal)) {
+                    errMsg = "字符串存在空格";
+                } else if (!UnitNumber.unitNumberStrRegExp.test(targetVal)) {
+                    errMsg = "非正常单位数字格式";
 
+                }
             }
-        }
 
-        state = errMsg.length == 0;
+            state = errMsg.length == 0;
+
+            /// 缓存存储
+            // 已达到缓存上限,删除一半数据
+            if (UnitNumber.checkUnitNumberMap.size >= UnitNumber.checkUnitNumberMapLimit) {
+                /** 删除key */
+                let removeArr = Array
+                    .from(UnitNumber.checkUnitNumberMap.entries())
+                    /** 距当前时间远近排序 */
+                    .sort((a, b) => a[1][0] < b[1][0] ? -1 : 1);
+                const removeLen = Math.floor(UnitNumber.checkUnitNumberMapLimit / 2);
+                for (let i = 0; i < removeLen; i++) {
+                    UnitNumber.checkUnitNumberMap.delete(removeArr[i][0]);
+                }
+            }
+
+            // 设置/更新缓存
+            UnitNumber.checkUnitNumberMap.set(targetVal, [Date.now(), state, errMsg]);
+        }
 
         if (errMsg) UnitNumber.debugLog("Current Error By UnitNumber.checkUnitNumber", errMsg, typeof targetVal, targetVal);
-
-        /// 缓存存储
-        // 已达到缓存上限,删除一半数据
-        if (UnitNumber.checkUnitNumberMap.size >= UnitNumber.checkUnitNumberMapLimit) {
-            /** 删除key */
-            let removeArr = Array
-                .from(UnitNumber.checkUnitNumberMap.entries())
-                /** 距当前时间远近排序 */
-                .sort((a, b) => a[1][0] < b[1][0] ? -1 : 1);
-            const removeLen = Math.floor(UnitNumber.checkUnitNumberMapLimit / 2);
-            for (let i = 0; i < removeLen; i++) {
-                UnitNumber.checkUnitNumberMap.delete(removeArr[i][0]);
-            }
-        }
-        // 设置/更新缓存
-        UnitNumber.checkUnitNumberMap.set(targetVal, [Date.now(), state, errMsg]);
 
         return state
     }
 
     /** 
-    * 比较
+    * 对传入值进行比较
     * @param firstVal 第一个值
     * @param type 比较类型
     * @param lastVal 第二个值
@@ -366,7 +374,7 @@ export class UnitNumber {
     }
 
     /** 
-     * 计算
+     * 对传入值进行计算
      * @param type 计算类型
      * @param targetVals 目标值
      */
@@ -415,6 +423,18 @@ export class UnitNumber {
         else result = new UnitNumber();
 
         return result;
+    }
+
+    /**
+     * 克隆单位字符
+     * @param targetVal 目标值
+     */
+    public static clone(targetVal: UnitNumberInputType): UnitNumber {
+        if (UnitNumber.checkUnitNumber(targetVal)) return new UnitNumber(targetVal)
+        else {
+            UnitNumber.debugLog('Last Error By UnitNumber.clone', "使用默认值", UnitNumber.defaultNumber);
+            return new UnitNumber(UnitNumber.defaultNumber);
+        }
     }
 
     constructor(targetVal: UnitNumberInputType = UnitNumber.defaultNumber) {
@@ -499,7 +519,7 @@ export class UnitNumber {
 
     // 加减乘除
     /**
-     * 加法操作
+     * 进行加法操作
      * @param targetVal 目标值
      * @returns 返回的是当前对象本身，并且当前对象值已经是计算后的值
      */
@@ -508,7 +528,7 @@ export class UnitNumber {
         return this;
     }
     /**
-     * 减法操作
+     * 进行减法操作
      * @param targetVal 目标值
      * @returns 返回的是当前对象本身，并且当前对象值已经是计算后的值
      */
@@ -517,7 +537,7 @@ export class UnitNumber {
         return this;
     }
     /**
-     * 乘法操作
+     * 进行乘法操作
      * @param targetVal 目标值
      * @returns 返回的是当前对象本身，并且当前对象值已经是计算后的值
      */
@@ -526,7 +546,7 @@ export class UnitNumber {
         return this;
     }
     /**
-     * 加除法操作
+     * 进行除法操作
      * @param targetVal 目标值
      * @returns 返回的是当前对象本身，并且当前对象值已经是计算后的值
      */
@@ -560,6 +580,6 @@ export class UnitNumber {
 
     /** 克隆 */
     public clone() {
-        return new UnitNumber(this)
+        return UnitNumber.clone(this);
     }
 }
