@@ -287,6 +287,7 @@ export class UnitNumber {
 
         if (BigNumber.isBigNumber(targetVal)) state = true;
         else if (targetVal instanceof UnitNumber) state = true;
+        else if (typeof targetVal == "number") state = true;
         else if (typeof targetVal !== "string") {
             errMsg = "传入对象无法转换为单位数字";
         } else {
