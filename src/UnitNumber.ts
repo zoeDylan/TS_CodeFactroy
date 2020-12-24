@@ -333,6 +333,36 @@ export class UnitNumber {
         return state
     }
 
+
+    /** 最小值 */
+    public static min(...param: UnitNumber[]): UnitNumber {
+        if (param.length == 0) return null;
+        if (param.length == 1) return param[0];
+
+        let result: UnitNumber = null;
+        for (let i = 0; i < param.length; i++) {
+            if (i == 0 || UnitNumber.compare(result, ">", param[i])) result = param[i]
+        }
+        return result;
+    }
+
+    /** 最大值 */
+    public static max(...param: UnitNumber[]): UnitNumber {
+        if (param.length == 0) return null;
+        if (param.length == 1) return param[0];
+
+        let result: UnitNumber = null;
+
+        for (let i = 0; i < param.length; i++) {
+            for (let i = 0; i < param.length; i++) {
+                if (i == 0 || UnitNumber.compare(result, "<", param[i])) result = param[i]
+            }
+        }
+
+        return result;
+    }
+
+
     /** 
     * 对传入值进行比较
     * @param firstVal 第一个值

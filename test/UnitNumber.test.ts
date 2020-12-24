@@ -45,4 +45,30 @@ describe("#UnitNumber.ts", function () {
             })
         })
     });
+
+    describe("#UnitNumber.min", () => {
+        ;[
+            [[100, 200, 300], 100],
+            [['1k', '1m', '1g'], '1k']
+        ].forEach(v => {
+            var val = UnitNumber.min(...(v[0] as Array<any>).map(vv => new UnitNumber(vv)));
+            it(`UnitNumber.min( ${(v[0] as Array<any>).join()} ) => ${v[1]}`, done => {
+                if (val.eq(v[1] as any)) done()
+                else done('获取最小值错误')
+            });
+        })
+    });
+
+    describe("#UnitNumber.max", () => {
+        ;[
+            [[100, 200, 300], 300],
+            [['1k', '1m', '1g'], '1g']
+        ].forEach(v => {
+            var val = UnitNumber.max(...(v[0] as Array<any>).map(vv => new UnitNumber(vv)));
+            it(`UnitNumber.max( ${(v[0] as Array<any>).join()} ) => ${v[1]}`, done => {
+                if (val.eq(v[1] as any)) done()
+                else done('获取最大值错误')
+            });
+        })
+    });
 })
