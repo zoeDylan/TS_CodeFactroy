@@ -33,7 +33,7 @@ export class UnitNumber {
     private static readonly defaultNumber = 0;
 
     /** 单位数字字符串正则 */
-    public static unitNumberStrRegExp = new RegExp(`^([\\+\\-]?\\d+(\\.\\d+)?(e[\\+\\-]?\\d+)?)(${UnitNumber.unitStrList.join("|").replace(" ", "")})?$`, "i");
+    private static unitNumberStrRegExp = new RegExp(`^([\\+\\-]?\\d+(\\.\\d+)?(e[\\+\\-]?\\d+)?)(${UnitNumber.unitStrList.join("|").replace(" ", "")})?$`, "i");
 
     /** 单位字符串正则 */
     private static unitStrRegExp = new RegExp(`(${UnitNumber.unitStrList.join("|").replace(" ", "")})?$`, "i");
@@ -194,6 +194,9 @@ export class UnitNumber {
     }
     /** 
      * 字符末尾补0
+     * ```ts
+     * UnitNumber.addSuffixZeroToString("3",3); // "300"
+     * ```
      * @param val 要补0的字符串
      * @param count 要补0的个数
      */
