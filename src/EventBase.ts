@@ -22,7 +22,7 @@ class EventCacheItem {
 
 
 /** 事件项 */
-export class EventItem {
+class EventItem {
     /** id记录 */
     static EventItemId = 0
     constructor() {
